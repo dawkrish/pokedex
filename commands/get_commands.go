@@ -26,5 +26,10 @@ func GetCommands() map[string]models.CliCommand {
 			Description: "Exit the Pokedex",
 			Callback:    commandExit,
 		},
+		"explore": {
+			Name:        "explore",
+			Description: "Explore Pokemons at a location",
+			Callback:    commandExplore,
+		},
 	}
 }

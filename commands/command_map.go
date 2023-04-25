@@ -8,29 +8,36 @@ import(
 	"encoding/json"
 
 	"github.com/krishnanshagarwal112/pokedex/models"
+	"github.com/krishnanshagarwal112/pokedex/cache"
 )
 
-func commandMap(cfg *models.Config) error {
-	res, err := http.Get(cfg.Next)
-	if err != nil {
-		fmt.Println("Error at Get :", err)
-		return err
-	}
-	body, err := io.ReadAll(res.Body)
-	defer res.Body.Close()
-	if err != nil {
-		fmt.Println("Error at parsing :", err)
-		return err
+func commandMap(cfg *models.Config, s string) error {
+	val,ok := cache.Get(&cfg.Caching,cfg.Next)
+	result := models.LocationResult{}
+	var body []byte
+	
+	if ok {
+		body = val
+
+	}else{
+		res, err := http.Get(cfg.Next)
+		if err != nil {
+			return err
+		}
+		respBody, err := io.ReadAll(res.Body)
+		defer res.Body.Close()
+		if err != nil {
+			return err
+		}
+		body = respBody
+		// add it to cache !
+		cache.Add(&cfg.Caching,cfg.Next,body)
 	}
 
-	result := models.Result{}
-
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		fmt.Println("Error at decoding :", err)
+	err := json.Unmarshal(body, &result)
+		if err != nil {
 		return err
 	}
-
 	cfg.Prev = result.Prev
 	cfg.Next = result.Next
 
@@ -38,41 +45,43 @@ func commandMap(cfg *models.Config) error {
 	for _,area := range areas{
 		fmt.Println(area.Name)
 	}
-
 	return err
 }
 
-func commandMapB(cfg *models.Config) error {
+
+func commandMapB(cfg *models.Config, s string) error {
 	if(cfg.Prev == ""){
 		err := errors.New("cannot go previous now ")
-		fmt.Print(err)
 		return err
 	}
 
-	res, err := http.Get(cfg.Prev)	
+	val,ok := cache.Get(&cfg.Caching,cfg.Prev)
+	result := models.LocationResult{}
+	var body []byte
 
-	if err != nil {
-		fmt.Println("Error at Get :", err)
-		return err
+	if ok {
+		body = val
+
+	}else{
+		res, err := http.Get(cfg.Prev)
+		if err != nil {
+			return err
+		}
+		respBody, err := io.ReadAll(res.Body)
+		defer res.Body.Close()
+		if err != nil {
+			return err
+		}
+		body = respBody
+		// add it to cache !
+		cache.Add(&cfg.Caching,cfg.Prev,body)
 	}
 
-	body, err := io.ReadAll(res.Body)
-	defer res.Body.Close()
-
-	if err != nil {
-		fmt.Println("Error at parsing :", err)
+	err := json.Unmarshal(body, &result)
+		if err != nil {
 		return err
 	}
-
-	result := models.Result{}
-
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		fmt.Println("Error at decoding :", err)
-		return err
-	}
-
-	cfg.Prev= result.Prev
+	cfg.Prev = result.Prev
 	cfg.Next = result.Next
 
 	areas := result.Results

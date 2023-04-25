@@ -8,7 +8,7 @@ import (
 
 
 
-func commandExit(cfg *models.Config) error {
+func commandExit(cfg *models.Config, s string) error {
 	os.Exit(0)
 	return nil
 }
