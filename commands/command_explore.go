@@ -20,13 +20,10 @@ func commandExplore(cfg *models.Config, argument string) error{
 	result := models.ExploreResult{}
 	var body []byte
 
-	fmt.Println("Found in Cache : ",ok)
-
 	if ok{
 		body = val
 	}else{
 		res, err := http.Get(req_url)
-		fmt.Println("ERROR : ",err)
 		if err != nil{
 			return err
 	}
@@ -42,7 +39,6 @@ func commandExplore(cfg *models.Config, argument string) error{
 
 	err:= json.Unmarshal(body,&result)
 	if err != nil{
-		fmt.Println("WRONG JSON !")
 		return err
 	}
 	pokemons := result.PokemonEncounters

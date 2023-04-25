@@ -12,6 +12,9 @@ import(
 )
 
 func commandMap(cfg *models.Config, s string) error {
+	if len(s) > 0{
+		return errors.New("just type `map`")
+	}
 	val,ok := cache.Get(&cfg.Caching,cfg.Next)
 	result := models.LocationResult{}
 	var body []byte
@@ -50,6 +53,9 @@ func commandMap(cfg *models.Config, s string) error {
 
 
 func commandMapB(cfg *models.Config, s string) error {
+	if len(s) > 0{
+		return errors.New("just type `mapb`")
+	}
 	if(cfg.Prev == ""){
 		err := errors.New("cannot go previous now ")
 		return err

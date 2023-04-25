@@ -20,7 +20,7 @@ func StartRepl(cfg *models.Config) {
 		name := reader.Text()
 		lower := strings.ToLower(name)
 		arguments := strings.Fields(lower)
-		fmt.Println(arguments)
+		// fmt.Println(arguments,len(arguments))
 
 		fmt.Printf("\n")
 		if len(name) == 0 {
@@ -28,7 +28,7 @@ func StartRepl(cfg *models.Config) {
 			continue
 		}
 		if len(arguments) == 1{
-			val, ok := commands[name]
+			val, ok := commands[arguments[0]]
 			if ok {
 				err := commands[val.Name].Callback(cfg,"")
 				if err != nil{
@@ -40,13 +40,11 @@ func StartRepl(cfg *models.Config) {
 			}
 		}	
 		if len(arguments) == 2{
-			if arguments[0] == "explore"{
-				err:=commands[arguments[0]].Callback(cfg,arguments[1])
-				if err != nil{
-					fmt.Printf("%v\n",err)
-					continue
+			err:=commands[arguments[0]].Callback(cfg,arguments[1])
+			if err != nil{
+				fmt.Printf("%v\n",err)
+				continue
 			}
-		}
 	}
 }
 }
